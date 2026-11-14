@@ -38,11 +38,15 @@
 
     <!-- Bottom Nav -->
     <nav class="reader-nav-footer">
-      <button type="button" class="reader-nav-btn" id="prevChapterBtn">&larr; Предыдущая</button>
-      <select id="chapterSelect" class="reader-btn" style="padding: 10px; font-size: 13px;">
-        <!-- Injected options -->
-      </select>
-      <button type="button" class="reader-nav-btn" id="nextChapterBtn">Следующая &rarr;</button>
+      <div class="reader-nav-select-wrap">
+        <select id="chapterSelect" class="reader-chapter-dropdown" aria-label="Выбрать главу">
+          <!-- Injected options -->
+        </select>
+      </div>
+      <div class="reader-nav-buttons-grid">
+        <button type="button" class="reader-nav-btn" id="prevChapterBtn">&larr; Предыдущая глава</button>
+        <button type="button" class="reader-nav-btn primary" id="nextChapterBtn">Следующая глава &rarr;</button>
+      </div>
     </nav>
   </main>
 
