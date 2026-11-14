@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Книга — ElfNuna</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-link">
+        <span class="brand-logo">EN</span>
+        <span class="brand-title">ElfNuna</span>
+      </a>
+      <nav class="header-nav">
+        <a href="index.html" class="header-nav-link active">Каталог</a>
+        <a href="https://github.com/ElfNuna7" target="_blank" rel="noopener noreferrer" class="header-nav-link">GitHub</a>
+        <a href="https://t.me/ElfNuna_ai_bot" target="_blank" rel="noopener noreferrer" class="header-nav-link">Telegram</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-wrapper" id="bookRoot">
+    <!-- Populated by JavaScript -->
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p class="footer-text">&copy; 2026 ElfNuna. Все права на тексты и вселенную принадлежат автору.</p>
+      <div class="header-nav">
+        <a href="index.html" class="footer-text">В каталог</a>
+        <a href="https://t.me/ElfNuna_ai_bot" target="_blank" rel="noopener noreferrer" class="footer-text">Бот автора</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="data/books.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const root = document.getElementById('bookRoot');
+      const params = new URLSearchParams(window.location.search);
+      const bookId = params.get('id') || BOOKS_DATA[0].id;
+      const book = BOOKS_DATA.find(b => b.id === bookId) || BOOKS_DATA[0];
+
+      document.title = `${book.title} — Читать онлайн | ElfNuna`;
+
+      // Read progress from localStorage
+      const lastChapter = parseInt(localStorage.getItem('last_read_' + book.id), 10) || 1;
+      const isStarted = localStorage.getItem('last_read_' + book.id) !== null;
+      const readBtnLabel = isStarted ? `Продолжить: Глава ${lastChapter}` : `Читать онлайн &bull; Глава 1`;
+
+      const statusBadge = book.isOngoing 
+        ? `<span class="badge-status ongoing">${book.statusTag}</span>` 
+        : `<span class="badge-status completed">${book.statusTag}</span>`;
+
+      // Build HTML
+      root.innerHTML = `
+        <div class="breadcrumb-nav">
+          <a href="index.html" class="breadcrumb-link">&larr; Каталог произведений</a>
+        </div>
+
+        <div class="book-header-strip">
+          <div class="book-rating-badge">
+            <span>&#9733;</span>
+            <span class="book-rating-score">${book.rating}</span>
+            <span class="book-rating-scale">/ 10 (${book.ratingCount} оценок)</span>
+          </div>
+        </div>
+
+        <h1 class="book-page-title">${book.title}</h1>
+
+        <div class="book-passport-grid">
+          <!-- Left Media Column -->
+          <div class="book-media-col">
+            <div class="book-passport-cover">
+              <img src="${book.cover}" alt="${book.title}">
+            </div>
+            <a href="reader.html?book=${book.id}&chapter=${lastChapter}" class="btn-read-main">
+              ${readBtnLabel}
+            </a>
+            <button type="button" class="btn-list-action" id="favBtn">
+              &#9825; Добавить в список
+            </button>
+          </div>
+
+          <!-- Right Details Column -->
+          <div class="book-info-col">
+            <table class="params-table">
+              <tbody>
+                <tr>
+                  <td class="param-label">Следующая глава</td>
+                  <td class="param-value param-highlight">${book.isOngoing ? 'В процессе написания' : 'Полный релиз'}</td>
+                </tr>
+                <tr>
+                  <td class="param-label">Тип</td>
+                  <td class="param-value">${book.type}</td>
+                </tr>
+                <tr>
+                  <td class="param-label">Глав</td>
+                  <td class="param-value">${book.plannedChapters}</td>
+                </tr>
+                <tr>
+                  <td class="param-label">Жанры</td>
+                  <td class="param-value">${book.genres.join(', ')}</td>
+                </tr>
+                <tr>
+                  <td class="param-label">Теги</td>
+                  <td class="param-value">${book.tags.join(', ')}</td>
+                </tr>
+                <tr>
+                  <td class="param-label">Статус</td>
+                  <td class="param-value">${statusBadge}</td>
+                </tr>
+                <tr>
+                  <td class="param-label">Возраст</td>
+                  <td class="param-value"><span class="badge-age">${book.ageRating}</span></td>
+                </tr>
+                <tr>
+                  <td class="param-label">Автор</td>
+                  <td class="param-value">${book.author}</td>
+                </tr>
+                <tr>
+                  <td class="param-label">Релиз</td>
+                  <td class="param-value">${book.releaseYear} г.</td>
+                </tr>
+                <tr>
+                  <td class="param-label">Обновлено</td>
+                  <td class="param-value">${book.lastUpdated}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Synopsis Block -->
+            <div class="synopsis-block">
+              <h2 class="synopsis-title">Аннотация</h2>
+              <p class="synopsis-text">${book.synopsis}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chapters Table of Contents -->
+        <section class="chapters-section">
+          <div class="chapters-header">
+            <h2 class="chapters-title">Оглавление (${book.chapters.length} глав)</h2>
+          </div>
+
+          <div class="chapters-list-wrap">
+            ${book.chapters.map(ch => {
+              const readKey = `read_${book.id}_ch_${ch.number}`;
+              const isRead = localStorage.getItem(readKey) === 'true';
+              const readIcon = isRead ? '<span class="chapter-read-check" title="Прочитано">&#10003;</span>' : '';
+              return `
+                <div class="chapter-row" onclick="window.location.href='reader.html?book=${book.id}&chapter=${ch.number}'">
+                  <div class="chapter-name">
+                    ${readIcon}
+                    <span>${ch.title}</span>
+                  </div>
+                  <div class="chapter-stats">
+                    ${ch.words} слов
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </section>
+      `;
+
+      // Favorite button micro-interaction
+      const favBtn = document.getElementById('favBtn');
+      if (favBtn) {
+        const favKey = 'fav_' + book.id;
+        if (localStorage.getItem(favKey)) {
+          favBtn.innerHTML = '&#9829; В избранном';
+          favBtn.style.color = '#f87171';
+        }
+        favBtn.addEventListener('click', () => {
+          if (localStorage.getItem(favKey)) {
+            localStorage.removeItem(favKey);
+            favBtn.innerHTML = '&#9825; Добавить в список';
+            favBtn.style.color = '';
+          } else {
+            localStorage.setItem(favKey, 'true');
+            favBtn.innerHTML = '&#9829; В избранном';
+            favBtn.style.color = '#f87171';
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Чтение главы — ElfNuna</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="reader-theme-serif">
+  <!-- Sticky Reader Top Bar -->
+  <header class="reader-top-bar">
+    <a href="#" id="backToBookLink" class="reader-back">&larr; К книге</a>
+    
+    <div class="reader-book-info" id="readerBookInfo">
+      Загрузка главы...
+    </div>
+
+    <div class="reader-actions">
+      <button type="button" class="reader-btn" id="btnFont" title="Переключить шрифт">Serif</button>
+      <button type="button" class="reader-btn" id="btnSizeDec" title="Уменьшить шрифт">A-</button>
+      <button type="button" class="reader-btn" id="btnSizeInc" title="Увеличить шрифт">A+</button>
+      <button type="button" class="reader-btn" id="btnTheme" title="Тема">Тьма</button>
+    </div>
+  </header>
+
+  <!-- Reading Area -->
+  <main class="reader-container">
+    <article id="readerContent">
+      <h1 class="reader-chapter-title" id="chapterTitle">Загрузка...</h1>
+      <div class="reader-chapter-meta" id="chapterMeta">
+        Пожалуйста, подождите...
+      </div>
+      
+      <div class="reader-text" id="chapterBody">
+        <!-- Paragraphs injected here -->
+      </div>
+    </article>
+
+    <!-- Bottom Nav -->
+    <nav class="reader-nav-footer">
+      <button type="button" class="reader-nav-btn" id="prevChapterBtn">&larr; Предыдущая</button>
+      <select id="chapterSelect" class="reader-btn" style="padding: 10px; font-size: 13px;">
+        <!-- Injected options -->
+      </select>
+      <button type="button" class="reader-nav-btn" id="nextChapterBtn">Следующая &rarr;</button>
+    </nav>
+  </main>
+
+  <script src="data/books.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const bookId = params.get('book') || BOOKS_DATA[0].id;
+      let chapterNum = parseInt(params.get('chapter'), 10) || 1;
+
+      const book = BOOKS_DATA.find(b => b.id === bookId) || BOOKS_DATA[0];
+
+      const backLink = document.getElementById('backToBookLink');
+      const bookInfo = document.getElementById('readerBookInfo');
+      const chapterTitle = document.getElementById('chapterTitle');
+      const chapterMeta = document.getElementById('chapterMeta');
+      const chapterBody = document.getElementById('chapterBody');
+      const prevBtn = document.getElementById('prevChapterBtn');
+      const nextBtn = document.getElementById('nextChapterBtn');
+      const chapterSelect = document.getElementById('chapterSelect');
+
+      backLink.href = `book.html?id=${book.id}`;
+      backLink.innerHTML = `&larr; ${book.title}`;
+
+      // Populate chapter selector
+      book.chapters.forEach(ch => {
+        const opt = document.createElement('option');
+        opt.value = ch.number;
+        opt.textContent = ch.title;
+        chapterSelect.appendChild(opt);
+      });
+
+      // Settings: Font, Size, Theme
+      const btnFont = document.getElementById('btnFont');
+      const btnSizeInc = document.getElementById('btnSizeInc');
+      const btnSizeDec = document.getElementById('btnSizeDec');
+      const btnTheme = document.getElementById('btnTheme');
+
+      let isSerif = localStorage.getItem('reader_font') !== 'sans';
+      let currentSize = parseInt(localStorage.getItem('reader_size'), 10) || 18;
+      let currentTheme = localStorage.getItem('reader_theme') || 'dark';
+
+      function applySettings() {
+        document.body.classList.toggle('reader-theme-serif', isSerif);
+        document.body.classList.toggle('reader-theme-sans', !isSerif);
+        btnFont.textContent = isSerif ? 'Serif' : 'Sans';
+
+        chapterBody.style.fontSize = currentSize + 'px';
+
+        document.body.classList.remove('theme-paper', 'theme-sepia');
+        if (currentTheme === 'paper') {
+          document.body.classList.add('theme-paper');
+          btnTheme.textContent = 'Бумага';
+        } else if (currentTheme === 'sepia') {
+          document.body.classList.add('theme-sepia');
+          btnTheme.textContent = 'Сепия';
+        } else {
+          btnTheme.textContent = 'Тьма';
+        }
+      }
+
+      btnFont.addEventListener('click', () => {
+        isSerif = !isSerif;
+        localStorage.setItem('reader_font', isSerif ? 'serif' : 'sans');
+        applySettings();
+      });
+
+      btnSizeInc.addEventListener('click', () => {
+        if (currentSize < 26) {
+          currentSize += 2;
+          localStorage.setItem('reader_size', currentSize);
+          applySettings();
+        }
+      });
+
+      btnSizeDec.addEventListener('click', () => {
+        if (currentSize > 14) {
+          currentSize -= 2;
+          localStorage.setItem('reader_size', currentSize);
+          applySettings();
+        }
+      });
+
+      btnTheme.addEventListener('click', () => {
+        if (currentTheme === 'dark') currentTheme = 'paper';
+        else if (currentTheme === 'paper') currentTheme = 'sepia';
+        else currentTheme = 'dark';
+        localStorage.setItem('reader_theme', currentTheme);
+        applySettings();
+      });
+
+      applySettings();
+
+      // Load Chapter Content
+      async function loadChapter(num) {
+        if (num < 1) num = 1;
+        if (num > book.chapters.length) num = book.chapters.length;
+        chapterNum = num;
+
+        // Save progress in localStorage
+        localStorage.setItem('last_read_' + book.id, chapterNum);
+        localStorage.setItem(`read_${book.id}_ch_${chapterNum}`, 'true');
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        chapterSelect.value = chapterNum;
+
+        // Button states
+        prevBtn.disabled = chapterNum <= 1;
+        nextBtn.disabled = chapterNum >= book.chapters.length;
+
+        const chMetaInfo = book.chapters.find(c => c.number === chapterNum);
+        const chName = chMetaInfo ? chMetaInfo.title : `Глава ${chapterNum}`;
+        document.title = `${chName} — ${book.title} | ElfNuna`;
+        bookInfo.textContent = `${book.title} • Глава ${chapterNum}`;
+
+        chapterTitle.textContent = chName;
+        chapterMeta.textContent = `Загрузка текста...`;
+        chapterBody.innerHTML = `<p style="color: var(--text-muted);">Загружаем главу с сервера...</p>`;
+
+        try {
+          const res = await fetch(`content/chapters/${book.id}/${chapterNum}.json`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+
+          chapterTitle.textContent = data.title;
+          const readMins = Math.max(1, Math.round(data.wordCount / 200));
+          chapterMeta.textContent = `${data.wordCount.toLocaleString('ru-RU')} слов • ~${readMins} мин чтения`;
+
+          chapterBody.innerHTML = '';
+          data.paragraphs.forEach(p => {
+            const el = document.createElement('p');
+            el.textContent = p;
+            chapterBody.appendChild(el);
+          });
+        } catch (err) {
+          chapterBody.innerHTML = `
+            <div style="padding: 24px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px;">
+              <p style="color: #f87171; font-weight: 600;">Не удалось загрузить главу: ${err.message}</p>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">Проверьте подключение к сети или обновите страницу.</p>
+            </div>
+          `;
+        }
+      }
+
+      // Event listeners for navigation
+      prevBtn.addEventListener('click', () => {
+        if (chapterNum > 1) {
+          const newUrl = `reader.html?book=${book.id}&chapter=${chapterNum - 1}`;
+          window.history.pushState({}, '', newUrl);
+          loadChapter(chapterNum - 1);
+        }
+      });
+
+      nextBtn.addEventListener('click', () => {
+        if (chapterNum < book.chapters.length) {
+          const newUrl = `reader.html?book=${book.id}&chapter=${chapterNum + 1}`;
+          window.history.pushState({}, '', newUrl);
+          loadChapter(chapterNum + 1);
+        }
+      });
+
+      chapterSelect.addEventListener('change', (e) => {
+        const selected = parseInt(e.target.value, 10);
+        const newUrl = `reader.html?book=${book.id}&chapter=${selected}`;
+        window.history.pushState({}, '', newUrl);
+        loadChapter(selected);
+      });
+
+      loadChapter(chapterNum);
+    });
+  </script>
+</body>
+</html>
