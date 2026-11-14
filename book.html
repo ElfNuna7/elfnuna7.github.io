@@ -64,11 +64,9 @@
         </div>
 
         <div class="book-header-strip">
-          <div class="book-rating-badge">
-            <span>&#9733;</span>
-            <span class="book-rating-score">${book.rating}</span>
-            <span class="book-rating-scale">/ 10 (${book.ratingCount} оценок)</span>
-          </div>
+          ${statusBadge}
+          <span class="badge-age">${book.ageRating}</span>
+          <span class="book-header-stat">${book.type} &bull; ${book.totalChapters} глав &bull; ${book.totalWords} слов</span>
         </div>
 
         <h1 class="book-page-title">${book.title}</h1>

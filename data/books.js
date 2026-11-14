@@ -3,10 +3,8 @@ const BOOKS_DATA = [
     "id": "v-teni-khrustalnogo-trona",
     "title": "В тени хрустального трона",
     "type": "Роман",
-    "author": "ElfNuna",
+    "author": "Семен Майский (ElfNuna)",
     "cover": "assets/covers/throne.jpg",
-    "rating": "9.4",
-    "ratingCount": "1.8K",
     "status": "В процессе написания",
     "statusTag": "Онгоинг",
     "isOngoing": true,
@@ -156,16 +154,15 @@ const BOOKS_DATA = [
         "words": "5 383",
         "release": "2026"
       }
-    ]
+    ],
+    "totalWords": "117 069"
   },
   {
     "id": "kolokol-greymarka",
     "title": "Колокол Греймарка",
     "type": "Роман",
-    "author": "ElfNuna",
+    "author": "Семен Майский (ElfNuna)",
     "cover": "assets/covers/bell.jpg",
-    "rating": "9.6",
-    "ratingCount": "2.4K",
     "status": "Завершено",
     "statusTag": "Полный релиз",
     "isOngoing": false,
@@ -248,16 +245,15 @@ const BOOKS_DATA = [
         "words": "7 092",
         "release": "2026"
       }
-    ]
+    ],
+    "totalWords": "68 492"
   },
   {
     "id": "stal-chernogo-broda",
     "title": "Сталь Чёрного Брода",
     "type": "Приквел / Военная повесть",
-    "author": "ElfNuna",
+    "author": "Семен Майский (ElfNuna)",
     "cover": "assets/covers/steel.jpg",
-    "rating": "9.5",
-    "ratingCount": "1.5K",
     "status": "В процессе написания",
     "statusTag": "Онгоинг",
     "isOngoing": true,
@@ -322,6 +318,7 @@ const BOOKS_DATA = [
         "words": "5 677",
         "release": "2026"
       }
-    ]
+    ],
+    "totalWords": "38 744"
   }
 ];

@@ -97,17 +97,19 @@
           card.innerHTML = `
             <div class="book-cover-wrap">
               <img src="${book.cover}" alt="${book.title}" class="book-cover-img" loading="lazy">
-              <span class="book-badge-rating">${book.rating}</span>
-              <span class="book-badge-status ${statusClass}">${book.statusTag}</span>
             </div>
             <div class="book-details">
+              <div class="book-card-tags-row">
+                <span class="badge-status ${statusClass}">${book.statusTag}</span>
+                <span class="badge-age">${book.ageRating}</span>
+              </div>
               <h2 class="book-title-link">
                 <a href="book.html?id=${book.id}">${book.title}</a>
               </h2>
               <div class="book-meta-line">${metaLine}</div>
               <p class="book-synopsis">${book.synopsis}</p>
               <div class="book-card-footer">
-                <span class="book-chapters-count">${book.totalChapters} глав &bull; ${book.ageRating}</span>
+                <span class="book-chapters-count">${book.totalChapters} глав &bull; ${book.totalWords} слов</span>
                 <a href="book.html?id=${book.id}" class="book-open-btn">${progressText} &rarr;</a>
               </div>
             </div>
