@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Чтение главы — ElfNuna</title>
+  <meta name="description" id="metaDescription" content="Онлайн-читалка произведений автора Семена Майского (ElfNuna).">
+  <meta name="author" content="Семен Майский (ElfNuna)">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" id="ogTitle" content="Чтение главы — Семен Майский (ElfNuna)">
+  <meta property="og:description" id="ogDescription" content="Онлайн-читалка без рекламы.">
+  <meta property="og:site_name" content="ElfNuna Library">
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="reader-theme-serif">
@@ -159,8 +168,9 @@
 
         const chMetaInfo = book.chapters.find(c => c.number === chapterNum);
         const chName = chMetaInfo ? chMetaInfo.title : `Глава ${chapterNum}`;
-        document.title = `${chName} — ${book.title} | ElfNuna`;
+        document.title = `${chName} — ${book.title} | Семен Майский`;
         bookInfo.textContent = `${book.title} • Глава ${chapterNum}`;
+        document.getElementById('ogTitle')?.setAttribute('content', `${chName} — ${book.title} | Семен Майский`);
 
         chapterTitle.textContent = chName;
         chapterMeta.textContent = `Загрузка текста...`;

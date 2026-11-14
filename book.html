@@ -4,6 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Книга — ElfNuna</title>
+  <meta name="description" id="metaDescription" content="Читать книги онлайн — официальная библиотека автора Семена Майского (ElfNuna).">
+  <meta name="author" content="Семен Майский (ElfNuna)">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="book">
+  <meta property="og:url" id="ogUrl" content="https://elfnuna7.github.io/book.html">
+  <meta property="og:title" id="ogTitle" content="Книга — Семен Майский (ElfNuna)">
+  <meta property="og:description" id="ogDescription" content="Читать книги автора Семена Майского (ElfNuna) онлайн.">
+  <meta property="og:image" id="ogImage" content="https://elfnuna7.github.io/assets/covers/bell.jpg">
+  <meta property="og:site_name" content="ElfNuna Library">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" id="twTitle" content="Книга — Семен Майский (ElfNuna)">
+  <meta name="twitter:description" id="twDescription" content="Читать книги автора Семена Майского (ElfNuna) онлайн.">
+  <meta name="twitter:image" id="twImage" content="https://elfnuna7.github.io/assets/covers/bell.jpg">
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -46,7 +63,20 @@
       const bookId = params.get('id') || BOOKS_DATA[0].id;
       const book = BOOKS_DATA.find(b => b.id === bookId) || BOOKS_DATA[0];
 
-      document.title = `${book.title} — Читать онлайн | ElfNuna`;
+      document.title = `${book.title} — Читать онлайн | Семен Майский (ElfNuna)`;
+
+      const pageUrl = `https://elfnuna7.github.io/book.html?id=${book.id}`;
+      const coverUrl = `https://elfnuna7.github.io/${book.cover}`;
+      const descText = `${book.title} (${book.type}, ${book.totalChapters} глав, ${book.totalWords} слов) — ${book.synopsis.slice(0, 160)}...`;
+
+      document.getElementById('metaDescription')?.setAttribute('content', descText);
+      document.getElementById('ogUrl')?.setAttribute('content', pageUrl);
+      document.getElementById('ogTitle')?.setAttribute('content', `${book.title} — Семен Майский`);
+      document.getElementById('ogDescription')?.setAttribute('content', descText);
+      document.getElementById('ogImage')?.setAttribute('content', coverUrl);
+      document.getElementById('twTitle')?.setAttribute('content', `${book.title} — Семен Майский`);
+      document.getElementById('twDescription')?.setAttribute('content', descText);
+      document.getElementById('twImage')?.setAttribute('content', coverUrl);
 
       // Read progress from localStorage
       const lastChapter = parseInt(localStorage.getItem('last_read_' + book.id), 10) || 1;
